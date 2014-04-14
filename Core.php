@@ -48,6 +48,16 @@ class Core extends \samson\core\CompressableService
         return parent::prepare();
     }
 
+    public function authorize()
+    {
+
+    }
+
+    public function authentication()
+    {
+
+    }
+
     /** Universal controller */
     public function __HANDLER()
     {
