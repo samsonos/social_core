@@ -3,7 +3,7 @@
  * Created by Vitaly Iegorov <egorov@samsonos.com>
  * on 11.04.14 at 15:17
  */
- namespace samson\social;
+ namespace samson\social\core;
 
 /**
  * Generic class for user registration
