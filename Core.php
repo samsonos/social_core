@@ -37,6 +37,9 @@ class Core extends \samson\core\CompressableService
     /** Module dependencies */
     public $requirements = array('activerecord');
 
+    /** External callable for handling social authorization */
+    public $handler;
+
     /** Module preparation */
     public function prepare()
     {
