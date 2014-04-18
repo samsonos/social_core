@@ -50,6 +50,22 @@ class Core extends \samson\core\CompressableService
         return parent::prepare();
     }
 
+    /**
+     * Generic random password generator
+     * @param int $length Password length
+     *
+     * @return string Generated password
+     */
+    public function generatePassword($length = 8)
+    {
+        $password = '';
+        for ($i=0; $i<$length;$i++) {
+            $password .= rand(0,9);
+        }
+
+        return $password;
+    }
+
     /** Universal controller */
     public function __HANDLER()
     {
