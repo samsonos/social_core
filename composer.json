@@ -2,7 +2,7 @@
 	"name":"samsonos/social_core",
 	"author":"Vitaly Iegorov <egorov@samsonos.com>",
 	"version":"0.0.1"
-	,"require":{"samsonos/activerecord":"*"},
+	,"require":{"samsonos/php_activerecord":"*"},
 	"license":"Open Software License (OSL) v 3.0",
 	"homepage":"http://samsonos.com/"
 }
