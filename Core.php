@@ -21,32 +21,15 @@ class Core extends \samson\core\CompressableService
 
     /* Database user email field */
     public $dbEmailField = 'email';
-
-    /** Database password column name */
-    public $dbPasswordField = 'password';
-
-    /** Database hashed email column name */
-    public $dbHashEmailField = 'hash_email';
-
-    /** Database hashed password column name */
-    public $dbHashPasswordField = 'hash_password';
-
-    /** Array of required field names(as keys) and validation handlers(as value) */
-    public $requiredFields = array();
-
-    /** Module dependencies */
-    public $requirements = array('activerecord');
-
+   
     /** External callable for handling social authorization */
     public $handler;
 
     /** Module preparation */
     public function prepare()
     {
-        // Create and check general database table fields configuration
-        db()->createField($this, $this->dbTable, 'dbPasswordField', 'VARCHAR(32)');
-        db()->createField($this, $this->dbTable, 'dbHashEmailField', 'VARCHAR(32)');
-        db()->createField($this, $this->dbTable, 'dbHashPasswordField', 'VARCHAR(32)');
+        // Create and check general database table fields configuration        
+        db()->createField($this, $this->dbTable, 'dbEmailField', 'VARCHAR(64)');        
 
         return parent::prepare();
     }
