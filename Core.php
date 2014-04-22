@@ -14,10 +14,16 @@
 class Core extends \samson\core\CompressableService
 {
     /** General hashing algorithm */
-    public static $hashAlgorithm = 'sha256';
+    protected static $hashAlgorithm = 'sha256';
 
     /** General hashing algorithm output size */
-    public static $hashLength = 64;
+    protected static $hashLength = 64;
+
+    /**
+     * Collection of social ancestors
+     * @var Core[]
+     */
+    protected static $ancestors = array();
 
     /** Module identifier */
     public $id = 'social';
@@ -28,8 +34,30 @@ class Core extends \samson\core\CompressableService
     /* Database user email field */
     public $dbEmailField = 'email';
 
-    /** External callable for handling social authorization */
-    public $handler;
+    /**
+     * Pointer to current user object
+     * @var \samson\activerecord\dbRecord
+     */
+    protected $user;
+
+    /** Is user authorized */
+    protected $authorized = false;
+
+    /**
+     * @return \samson\activerecord\dbRecord Pointer to current authorized user object
+     */
+    public function & user()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return bool True if user is authorized
+     */
+    public function authorized()
+    {
+        return $this->authorized;
+    }
 
     /**
      * Hashing function
@@ -50,6 +78,28 @@ class Core extends \samson\core\CompressableService
         return parent::prepare();
     }
 
+    /** Module initialization */
+    public function init(array $params = array())
+    {
+        // Store this module as ancestor
+        self::$ancestors[$this->id] = & $this;
+
+        // Search for user in session
+        $pointer = & $_SESSION[ $this->identifier() ];
+        if (isset($pointer)) {
+
+            // Load user from session
+            $this->user = unserialize($pointer);
+            $this->authorized = true;
+
+            // Tell all ancestors that we are in
+            foreach (self::$ancestors as $ancestor) {
+                $ancestor->user = & $this->user;
+                $ancestor->authorized = true;
+            }
+        }
+    }
+
     /**
      * Generic random password generator
      * @param int $length Password length
@@ -64,6 +114,52 @@ class Core extends \samson\core\CompressableService
         }
 
         return $password;
+    }
+
+    /**
+     * @return string Unique module state identifier
+     */
+    public function identifier()
+    {
+        return str_replace(array('\\','/'), '_', __NAMESPACE__.'/'.$this->id.'_'.url()->base());
+    }
+
+    /**
+     * Finish authorization process and return asynchronous response
+     * @param \samson\activerecord\dbRecord $user Pointer to filled user object
+     * @param bool $remember Flag for setting cookie for further automatic authorization
+     *
+     * @return array Asynchronous response array
+     */
+    public function authorize(\samson\activerecord\dbRecord & $user, $remember = false)
+    {
+        // Store pointer to authorized user
+        $this->user = & $user;
+
+        $this->authorized = true;
+
+        // Save user in session
+        $_SESSION[ $this->identifier() ] = serialize( $this->user );
+
+        // Tell all ancestors that we are in
+        foreach (self::$ancestors as $ancestor) {
+            $ancestor->user = & $this->user;
+            $ancestor->authorized = true;
+        }
+
+        // Return authorization status
+        return $this->authorized;
+    }
+
+    /** Call deauthorization process */
+    public function deauthorize()
+    {
+        // Tell all ancestors that we are out
+        foreach (self::$ancestors as $ancestor) {
+            $ancestor->authorized = false;
+            unset($ancestor->user);
+            unset($_SESSION[$ancestor->identifier()]);
+        }
     }
 }
  
