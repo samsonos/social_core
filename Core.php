@@ -14,10 +14,16 @@
 class Core extends \samson\core\CompressableService
 {
     /** General hashing algorithm */
-    public static $hashAlgorithm = 'sha256';
+    protected static $hashAlgorithm = 'sha256';
 
     /** General hashing algorithm output size */
-    public static $hashLength = 64;
+    protected static $hashLength = 64;
+
+    /**
+     * Collection of social ancestors
+     * @var Core[]
+     */
+    protected static $ancestors = array();
 
     /** Module identifier */
     public $id = 'social';
@@ -28,8 +34,30 @@ class Core extends \samson\core\CompressableService
     /* Database user email field */
     public $dbEmailField = 'email';
 
-    /** External callable for handling social authorization */
-    public $handler;
+    /**
+     * Pointer to current user object
+     * @var \samson\activerecord\dbRecord
+     */
+    protected $user;
+
+    /** Is user authorized */
+    protected $authorized = false;
+
+    /**
+     * @return \samson\activerecord\dbRecord Pointer to current authorized user object
+     */
+    public function & user()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return bool True if user is authorized
+     */
+    public function authorized()
+    {
+        return $this->authorized;
+    }
 
     /**
      * Hashing function
@@ -50,62 +78,88 @@ class Core extends \samson\core\CompressableService
         return parent::prepare();
     }
 
-    /** Universal controller */
-    public function __HANDLER()
+    /** Module initialization */
+    public function init(array $params = array())
     {
-        $result = array('status' => '0');
+        // Store this module as ancestor
+        self::$ancestors[$this->id] = & $this;
 
-        // Collection of required fields
-        $required = array('nick' => '', 'email' => '', 'password' => '');
+        // Search for user in session
+        $pointer = & $_SESSION[ $this->identifier() ];
+        if (isset($pointer)) {
 
-        // If we received post data
-        if (isset($_POST)) {
+            // Load user from session
+            $this->user = unserialize($pointer);
+            $this->authorized = true;
 
-            // Convert all keys to lowercase
-            $_POST = array_change_key_case_unicode($_POST);
-            $required = array_change_key_case_unicode($required);
-
-            // Get keys difference with required array
-            $difference = array_diff(array_keys($required), array_keys($_POST));
-            if (sizeof($difference) === 0) {
-
-                /**@var \playtop\user $user */
-                $user = null;
-                // Try to find user with this email
-                if(dbQuery('\playtop\user')->email($_POST['email'])->first($user)) {
-                    $result['error'] = 'Email is busy';
-
-                } else {
-
-                    // Create new database record object without saving to database
-                    $user = new \playtop\user(false);
-
-                    // Convert object variables to lower case and iterate them
-                    foreach (array_change_key_case_unicode(get_object_vars($user)) as $field => $oldValue) {
-                        // If we have received field - fill it with simple filtering
-                        if (isset($_POST[$field])) {
-                            $user->$field = filter_var($_POST[$field]);
-                        }
-                    }
-
-                    // Create new database record
-                    $user->save();
-
-                    // Pass user object to frontend
-                    $result['user'] = $user;
-
-                    // All required field are passed
-                    $result['status'] = '1';
-                }
-
-            } else { // Not all required fields has been posted
-                $result['error'] = 'Not all fields passed from form';
-                $result['not_filled'] = $difference;
+            // Tell all ancestors that we are in
+            foreach (self::$ancestors as $ancestor) {
+                $ancestor->user = & $this->user;
+                $ancestor->authorized = true;
             }
         }
-
-        return $result;
     }
 
+    /**
+     * Generic random password generator
+     * @param int $length Password length
+     *
+     * @return string Generated password
+     */
+    public function generatePassword($length = 8)
+    {
+        $password = '';
+        for ($i=0; $i<$length;$i++) {
+            $password .= rand(0,9);
+        }
+
+        return $password;
+    }
+
+    /**
+     * @return string Unique module state identifier
+     */
+    public function identifier()
+    {
+        return str_replace(array('\\','/'), '_', __NAMESPACE__.'/'.$this->id.'_'.url()->base());
+    }
+
+    /**
+     * Finish authorization process and return asynchronous response
+     * @param \samson\activerecord\dbRecord $user Pointer to filled user object
+     * @param bool $remember Flag for setting cookie for further automatic authorization
+     *
+     * @return array Asynchronous response array
+     */
+    public function authorize(\samson\activerecord\dbRecord & $user, $remember = false)
+    {
+        // Store pointer to authorized user
+        $this->user = & $user;
+
+        $this->authorized = true;
+
+        // Save user in session
+        $_SESSION[ $this->identifier() ] = serialize( $this->user );
+
+        // Tell all ancestors that we are in
+        foreach (self::$ancestors as $ancestor) {
+            $ancestor->user = & $this->user;
+            $ancestor->authorized = true;
+        }
+
+        // Return authorization status
+        return $this->authorized;
+    }
+
+    /** Call deauthorization process */
+    public function deauthorize()
+    {
+        // Tell all ancestors that we are out
+        foreach (self::$ancestors as $ancestor) {
+            $ancestor->authorized = false;
+            unset($ancestor->user);
+            unset($_SESSION[$ancestor->identifier()]);
+        }
+    }
 }
  
