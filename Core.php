@@ -5,13 +5,16 @@
  */
  namespace samson\social;
 
-/**
+ use samson\activerecord\dbRecord;
+ use samson\core\CompressableService;
+
+ /**
  * Generic class for user registration
  * @author Vitaly Egorov <egorov@samsonos.com>
  * @copyright 2013 SamsonOS
  * @version 0.1
  */
-class Core extends \samson\core\CompressableService
+class Core extends CompressableService
 {
     /** General hashing algorithm */
     protected static $hashAlgorithm = 'sha256';
@@ -36,7 +39,7 @@ class Core extends \samson\core\CompressableService
 
     /**
      * Pointer to current user object
-     * @var \samson\activerecord\dbRecord
+     * @var dbRecord
      */
     protected $user;
 
@@ -44,7 +47,7 @@ class Core extends \samson\core\CompressableService
     protected $authorized = false;
 
     /**
-     * @return \samson\activerecord\dbRecord Pointer to current authorized user object
+     * @return dbRecord Pointer to current authorized user object
      */
     public function & user()
     {
@@ -129,12 +132,12 @@ class Core extends \samson\core\CompressableService
 
     /**
      * Finish authorization process and return asynchronous response
-     * @param \samson\activerecord\dbRecord $user Pointer to filled user object
+     * @param dbRecord $user Pointer to filled user object
      * @param bool $remember Flag for setting cookie for further automatic authorization
      *
      * @return array Asynchronous response array
      */
-    public function authorize(\samson\activerecord\dbRecord & $user, $remember = false)
+    public function authorize(dbRecord & $user, $remember = false)
     {
         // Store pointer to authorized user
         $this->user = & $user;
