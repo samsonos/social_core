@@ -164,5 +164,12 @@ class Core extends \samson\core\CompressableService
             unset($_SESSION[$ancestor->identifier()]);
         }
     }
+
+    /** Обработчик сериализации объекта */
+    public function __sleep()
+    {
+        // Remove all unnecessary fields from serialization
+        return array_diff( parent::__sleep(), array( 'authorized', 'user' ));
+    }
 }
  
