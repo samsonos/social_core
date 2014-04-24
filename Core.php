@@ -9,7 +9,7 @@
  use samson\core\CompressableService;
 
  /**
- * Generic class for user registration
+ * Generic class for user authorization
  * @author Vitaly Egorov <egorov@samsonos.com>
  * @copyright 2013 SamsonOS
  * @version 0.1
@@ -145,11 +145,10 @@ class Core extends CompressableService
     /**
      * Finish authorization process and return asynchronous response
      * @param dbRecord $user Pointer to filled user object
-     * @param bool $remember Flag for setting cookie for further automatic authorization
      *
      * @return array Asynchronous response array
      */
-    public function authorize(dbRecord & $user, $remember = false)
+    public function authorize(dbRecord & $user)
     {
         // Store pointer to authorized user
         $this->user = & $user;
@@ -165,7 +164,7 @@ class Core extends CompressableService
         return $this->authorized;
     }
 
-    /** Call deauthorization process */
+    /** Initiate deauthorization process */
     public function deauthorize()
     {
         // Tell all ancestors that we are out
