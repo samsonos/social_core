@@ -84,18 +84,21 @@ class Core extends \samson\core\CompressableService
         // Store this module as ancestor
         self::$ancestors[$this->id] = & $this;
 
-        // Search for user in session
-        $pointer = & $_SESSION[ $this->identifier() ];
-        if (isset($pointer)) {
+        // If we are not authorized
+        if(!$this->authorized) {
+            // Search for user in session
+            $pointer = & $_SESSION[ $this->identifier() ];
+            if (isset($pointer)) {
 
-            // Load user from session
-            $this->user = unserialize($pointer);
-            $this->authorized = true;
+                // Load user from session
+                $this->user = unserialize($pointer);
+                $this->authorized = true;
 
-            // Tell all ancestors that we are in
-            foreach (self::$ancestors as $ancestor) {
-                $ancestor->user = & $this->user;
-                $ancestor->authorized = true;
+                // Tell all ancestors that we are in
+                foreach (self::$ancestors as & $ancestor) {
+                    $ancestor->user = & $this->user;
+                    $ancestor->authorized = true;
+                }
             }
         }
     }
@@ -121,7 +124,7 @@ class Core extends \samson\core\CompressableService
      */
     public function identifier()
     {
-        return str_replace(array('\\','/'), '_', __NAMESPACE__.'/'.$this->id.'_'.url()->base());
+        return str_replace(array('\\','/'), '_', __NAMESPACE__.'/auth_'.url()->base());
     }
 
     /**
@@ -142,7 +145,7 @@ class Core extends \samson\core\CompressableService
         $_SESSION[ $this->identifier() ] = serialize( $this->user );
 
         // Tell all ancestors that we are in
-        foreach (self::$ancestors as $ancestor) {
+        foreach (self::$ancestors as & $ancestor) {
             $ancestor->user = & $this->user;
             $ancestor->authorized = true;
         }
@@ -155,7 +158,7 @@ class Core extends \samson\core\CompressableService
     public function deauthorize()
     {
         // Tell all ancestors that we are out
-        foreach (self::$ancestors as $ancestor) {
+        foreach (self::$ancestors as & $ancestor) {
             $ancestor->authorized = false;
             unset($ancestor->user);
             unset($_SESSION[$ancestor->identifier()]);
