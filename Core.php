@@ -47,6 +47,23 @@ class Core extends CompressableService
     protected $authorized = false;
 
     /**
+     * Update authorization status of all social services
+     * @param dbRecord $user Pointer to authorized user database record
+     */
+    protected function update(dbRecord & $user)
+    {
+        // Load user from session
+        $this->user = $user;
+        $this->authorized = true;
+
+        // Tell all ancestors that we are in
+        foreach (self::$ancestors as & $ancestor) {
+            $ancestor->user = & $this->user;
+            $ancestor->authorized = $this->authorized;
+        }
+    }
+
+    /**
      * @return dbRecord Pointer to current authorized user object
      */
     public function & user()
@@ -95,13 +112,8 @@ class Core extends CompressableService
 
                 // Load user from session
                 $this->user = unserialize($pointer);
-                $this->authorized = true;
 
-                // Tell all ancestors that we are in
-                foreach (self::$ancestors as & $ancestor) {
-                    $ancestor->user = & $this->user;
-                    $ancestor->authorized = true;
-                }
+                $this->update($this->user);
             }
         }
     }
@@ -147,11 +159,7 @@ class Core extends CompressableService
         // Save user in session
         $_SESSION[ $this->identifier() ] = serialize( $this->user );
 
-        // Tell all ancestors that we are in
-        foreach (self::$ancestors as & $ancestor) {
-            $ancestor->user = & $this->user;
-            $ancestor->authorized = true;
-        }
+        $this->update($this->user);
 
         // Return authorization status
         return $this->authorized;
