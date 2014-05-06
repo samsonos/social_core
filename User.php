@@ -12,7 +12,7 @@ namespace samson\social;
  * @copyright 2013 SamsonOS
  * @version 
  */
-class User 
+class User implements \samson\core\iModuleViewable
 {
     /** User given name */
     public $name = '';
@@ -40,6 +40,22 @@ class User
 
     /** User additional data */
     public $other;
+
+    /** Transform object for view rendering */
+    public function toView($prefix = null, array $restricted = array())
+    {
+        return array(
+            $prefix.'name' => $this->name,
+            $prefix.'surname' => $this->surname,
+            $prefix.'socialID' => $this->socialID,
+            $prefix.'email' => $this->email,
+            $prefix.'birthday' => $this->birthday,
+            $prefix.'gender' => $this->gender,
+            $prefix.'locale' => $this->locale,
+            $prefix.'photo' => $this->photo,
+            $prefix.'other' => $this->other
+        );
+    }
 
     /**
      * Generic user constructor

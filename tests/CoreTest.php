@@ -5,8 +5,7 @@
  */
 namespace samson\social\tests;
 
-define('__VENDOR_PATH', '/var/www.prod/vendor/');
-
+define('__VENDOR_PATH', __DIR__.'/../../../../');
 require_once(__VENDOR_PATH.'samsonos/php/core/samson.php');
 require_once(__DIR__.'/../Core.php');
 
