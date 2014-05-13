@@ -59,9 +59,6 @@ class Core extends CompressableService
         $this->user = $user;
         $this->authorized = true;
 
-        // Set pointer to current active social module
-        $this->active = & $this;
-
         // Tell all ancestors that we are in
         foreach (self::$ancestors as & $ancestor) {
             $ancestor->user = & $this->user;
@@ -146,7 +143,7 @@ class Core extends CompressableService
      */
     public function identifier()
     {
-        return str_replace(array('\\','/'), '_', __NAMESPACE__.'/auth_'.url()->base());
+        return str_replace(array('\\','/'), '_', __NAMESPACE__.'/'.$this->id.'_auth_'.url()->base());
     }
 
     /**
@@ -164,6 +161,8 @@ class Core extends CompressableService
 
         // Save user in session
         $_SESSION[ $this->identifier() ] = serialize( $this->user );
+
+        $this->active = & $this;
 
         $this->update($this->user);
 
