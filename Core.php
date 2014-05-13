@@ -46,6 +46,9 @@ class Core extends CompressableService
     /** Is user authorized */
     protected $authorized = false;
 
+    /** Pointer to current social module who has authorized */
+    public $active;
+
     /**
      * Update authorization status of all social services
      * @param dbRecord $user Pointer to authorized user database record
@@ -56,9 +59,13 @@ class Core extends CompressableService
         $this->user = $user;
         $this->authorized = true;
 
+        // Set pointer to current active social module
+        $this->active = & $this;
+
         // Tell all ancestors that we are in
         foreach (self::$ancestors as & $ancestor) {
             $ancestor->user = & $this->user;
+            $ancestor->active = & $this;
             $ancestor->authorized = $this->authorized;
         }
     }
