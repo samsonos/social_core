@@ -59,6 +59,9 @@ class Core extends CompressableService
         $this->user = $user;
         $this->authorized = true;
 
+        // Save to session
+        $_SESSION[ $this->identifier() ] = serialize( $this->user );
+
         // Tell all ancestors that we are in
         foreach (self::$ancestors as & $ancestor) {
             $ancestor->user = & $this->user;
