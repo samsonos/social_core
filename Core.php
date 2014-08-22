@@ -17,10 +17,10 @@
 class Core extends CompressableService
 {
     /** General hashing algorithm */
-    protected static $hashAlgorithm = 'sha256';
+    public $hashAlgorithm = 'sha256';
 
     /** General hashing algorithm output size */
-    protected static $hashLength = 64;
+    public $hashLength = 64;
 
     /**
      * Collection of social ancestors
@@ -93,7 +93,7 @@ class Core extends CompressableService
      */
     public function hash($value)
     {
-        return hash(self::$hashAlgorithm, $value);
+        return hash($this->$hashAlgorithm, $value);
     }
 
     /** Module preparation */
