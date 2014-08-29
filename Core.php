@@ -93,7 +93,7 @@ class Core extends CompressableService
      */
     public function hash($value)
     {
-        return hash($this->$hashAlgorithm, $value);
+        return hash($this->hashAlgorithm, $value);
     }
 
     /** Module preparation */
