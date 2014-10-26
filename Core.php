@@ -22,6 +22,9 @@ class Core extends CompressableService
     /** General hashing algorithm output size */
     public $hashLength = 64;
 
+    /** @var callable External initialization handler */
+    public $initHandler;
+
     /**
      * Collection of social ancestors
      * @var Core[]
@@ -122,6 +125,12 @@ class Core extends CompressableService
 
                 $this->update($this->user);
             }
+        }
+
+        // If external init handler is set
+        if (is_callable($this->initHandler)) {
+            // Call external handler and pass reference on this object
+            call_user_func_array($this->initHandler, array(&$this));
         }
     }
 
