@@ -86,6 +86,8 @@ class Core extends CompressableService
      */
     public function authorized()
     {
+        (isset($_SESSION[m('socialemail')->identifier()])) ? $this->authorized = true : $this->authorized = false;
+
         return $this->authorized;
     }
 
@@ -192,7 +194,6 @@ class Core extends CompressableService
             $ancestor->authorized = false;
             unset($ancestor->user);
             unset($_SESSION[$ancestor->identifier()]);
-            unset($_SESSION['auth_user_id']);
         }
     }
 
