@@ -176,8 +176,6 @@ class Core extends CompressableService
         // Save user in session
         $_SESSION[$this->identifier()] = serialize($this->user);
 
-        $_SESSION['auth_user_id'] = ($this->user['UserID']);
-
         $this->active = & $this;
 
         $this->update($this->user);
