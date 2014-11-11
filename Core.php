@@ -63,7 +63,7 @@ class Core extends CompressableService
         $this->authorized = true;
 
         // Save to session
-        $_SESSION[ $this->identifier() ] = serialize( $this->user );
+        $_SESSION[$this->identifier()] = serialize($this->user);
 
         // Tell all ancestors that we are in
         foreach (self::$ancestors as & $ancestor) {
@@ -108,14 +108,17 @@ class Core extends CompressableService
         return parent::prepare();
     }
 
-    /** Module initialization */
+    /**
+     * Module initialization
+     * @param array $params
+     */
     public function init(array $params = array())
     {
         // Store this module as ancestor
         self::$ancestors[$this->id] = & $this;
 
         // If we are not authorized
-        if(!$this->authorized) {
+        if (!$this->authorized) {
             // Search for user in session
             $pointer = & $_SESSION[ $this->identifier() ];
             if (isset($pointer)) {
@@ -143,10 +146,9 @@ class Core extends CompressableService
     public function generatePassword($length = 8)
     {
         $password = '';
-        for ($i=0; $i<$length;$i++) {
-            $password .= rand(0,9);
+        for ($i=0; $i<$length; $i++) {
+            $password .= rand(0, 9);
         }
-
         return $password;
     }
 
@@ -172,7 +174,9 @@ class Core extends CompressableService
         $this->authorized = true;
 
         // Save user in session
-        $_SESSION[ $this->identifier() ] = serialize( $this->user );
+        $_SESSION[$this->identifier()] = serialize($this->user);
+
+        $_SESSION['auth_user_id'] = ($this->user['UserID']);
 
         $this->active = & $this;
 
@@ -190,6 +194,7 @@ class Core extends CompressableService
             $ancestor->authorized = false;
             unset($ancestor->user);
             unset($_SESSION[$ancestor->identifier()]);
+            unset($_SESSION['auth_user_id']);
         }
     }
 
@@ -197,7 +202,6 @@ class Core extends CompressableService
     public function __sleep()
     {
         // Remove all unnecessary fields from serialization
-        return array_diff( parent::__sleep(), array( 'authorized', 'user' ));
+        return array_diff(parent::__sleep(), array( 'authorized', 'user' ));
     }
 }
- 
