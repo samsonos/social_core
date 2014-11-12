@@ -40,6 +40,12 @@ class Core extends CompressableService
     /* Database user email field */
     public $dbEmailField = 'email';
 
+    /* Database user password field */
+    public $dbPasswordField = 'Password';
+
+    /** Database user token field */
+    public $accessToken = 'accessToken';
+
     /**
      * Pointer to current user object
      * @var dbRecord
@@ -106,6 +112,10 @@ class Core extends CompressableService
     {
         // Create and check general database table fields configuration
         db()->createField($this, $this->dbTable, 'dbEmailField', 'VARCHAR(64)');
+        // Create and check general database table fields configuration
+        db()->createField($this, $this->dbTable, 'dbPasswordField', 'VARCHAR(64)');
+        // Create and check general database table fields configuration
+        db()->createField($this, $this->dbTable, 'accessToken', 'VARCHAR(256)');
 
         return parent::prepare();
     }
@@ -194,6 +204,7 @@ class Core extends CompressableService
             $ancestor->authorized = false;
             unset($ancestor->user);
             unset($_SESSION[$ancestor->identifier()]);
+            setcookie('_cookie_accessToken');
         }
     }
 
