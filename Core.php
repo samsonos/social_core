@@ -7,6 +7,7 @@
 
  use samson\activerecord\dbRecord;
  use samson\core\CompressableService;
+ use samsonphp\event\Event;
 
  /**
  * Generic class for user authorization
@@ -35,7 +36,7 @@ class Core extends CompressableService
     public $id = 'social';
 
     /** Database table name for interaction */
-    public $dbTable;
+    public $dbTable = 'user';
 
     /* Database user email field */
     public $dbEmailField = 'email';
@@ -145,6 +146,7 @@ class Core extends CompressableService
             // Call external handler and pass reference on this object
             call_user_func_array($this->initHandler, array(&$this));
         }
+        Event::fire('socal.core.inited', array(&$this));
     }
 
     /**
