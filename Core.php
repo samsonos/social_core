@@ -45,6 +45,9 @@ class Core extends CompressableService
     /** Database table name for interaction */
     public $dbTable = '\samson\activerecord\user';
 
+    /** Database primary field name */
+    public $dbPrimaryField = 'UserID';
+
     /* Database user email field */
     public $dbEmailField = 'email';
 
