@@ -43,7 +43,7 @@ class Core extends CompressableService
     public $id = 'social';
 
     /** Database table name for interaction */
-    public $dbTable = 'user';
+    public $dbTable = '\samson\activerecord\user';
 
     /* Database user email field */
     public $dbEmailField = 'email';
