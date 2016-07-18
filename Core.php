@@ -43,7 +43,7 @@ class Core extends CompressableService
     public $id = 'social';
 
     /** Database table name for interaction */
-    public $dbTable = '\samson\activerecord\user';
+    public $dbTable = \samsoncms\api\generated\User::class;
 
     /** Database primary field name */
     public $dbPrimaryField = 'UserID';
