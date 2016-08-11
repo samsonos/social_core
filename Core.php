@@ -155,7 +155,7 @@ class Core extends CompressableService
         }
 
         // New approach instead of old handler
-        Event::fire(self::EVENT_INIT_END, array(&$this));
+        //Event::fire(self::EVENT_INIT_END, array(&$this));
 
         return parent::init($params);
     }
