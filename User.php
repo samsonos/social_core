@@ -12,7 +12,7 @@ namespace samson\social;
  * @copyright 2013 SamsonOS
  * @version 
  */
-class User implements \samson\core\iModuleViewable
+class User implements \samsonframework\core\RenderInterface
 {
     /** User given name */
     public $name = '';
