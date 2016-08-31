@@ -115,11 +115,11 @@ class Core extends CompressableService
     public function prepare()
     {
         // Create and check general database table fields configuration
-        db()->createField($this, $this->dbTable, 'dbEmailField', 'VARCHAR(64)');
+        //db()->createField($this, $this->dbTable, 'dbEmailField', 'VARCHAR(64)');
         // Create and check general database table fields configuration
-        db()->createField($this, $this->dbTable, 'dbPasswordField', 'VARCHAR(64)');
+        //db()->createField($this, $this->dbTable, 'dbPasswordField', 'VARCHAR(64)');
         // Create and check general database table fields configuration
-        db()->createField($this, $this->dbTable, 'accessToken', 'VARCHAR(256)');
+        //db()->createField($this, $this->dbTable, 'accessToken', 'VARCHAR(256)');
 
         return parent::prepare();
     }
