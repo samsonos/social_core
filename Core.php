@@ -5,6 +5,7 @@
  */
 namespace samson\social;
 
+use samsonframework\container\definition\analyzer\annotation\annotation\Service;
 use samsonframework\orm\RecordInterface;
 use samson\core\CompressableService;
 use samsonphp\event\Event;
@@ -18,6 +19,7 @@ use samsonphp\event\Event;
   *
   * @author Vitaly Egorov <egorov@samsonos.com>
   * @copyright 2015 SamsonOS
+  * @Service("social")
   */
 class Core extends CompressableService
 {
