@@ -57,6 +57,12 @@ class Core extends CompressableService
     /** Database user token field */
     public $accessToken = 'accessToken';
 
+    /** Database user created date field */
+    public $dbCreatedField = 'created';
+
+    /** Database user active field */
+    public $dbActiveField = 'Active';
+
     /** @var self Pointer to current social module who has authorized */
     public $active;
 
